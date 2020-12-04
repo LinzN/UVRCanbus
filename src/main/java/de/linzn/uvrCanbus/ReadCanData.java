@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
 public class ReadCanData {
 
@@ -40,8 +41,12 @@ public class ReadCanData {
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
             }
+            if(!process.waitFor(40, TimeUnit.SECONDS)){
+                System.out.println("Killing process");
+                process.destroyForcibly();
+            }
 
-            int exitCode = process.waitFor();
+            int exitCode = process.exitValue();
             if (exitCode != 0) {
                 System.out.println("Can error! No valid output.");
                 return null;

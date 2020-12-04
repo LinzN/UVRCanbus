@@ -22,7 +22,7 @@ public class UVRCanbusApp {
 
     public UVRCanbusApp() {
         System.out.println("Starting canbus data parser!");
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new CanRunnable(), 10, 180, TimeUnit.SECONDS);
+        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(new CanRunnable(), 10, 180, TimeUnit.SECONDS);
     }
 
     public static void main(String[] args) {
