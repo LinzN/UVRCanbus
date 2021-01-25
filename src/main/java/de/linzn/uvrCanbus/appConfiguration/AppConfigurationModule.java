@@ -20,6 +20,11 @@ public class AppConfigurationModule {
     /* Variables */
     public String stemHost;
     public int stemPort;
+    public String mqttBroker;
+    public String username;
+    public String password;
+    public String clientId;
+
     private String fileName = "settings.properties";
 
     /* Create class instance */
@@ -58,6 +63,10 @@ public class AppConfigurationModule {
             // set the properties value
             prop.setProperty("stemHost", "10.40.0.40");
             prop.setProperty("stemPort", "8081");
+            prop.setProperty("mqttBroker", "tcp://10.50.0.1:1883");
+            prop.setProperty("clientId", "canbus-uvr");
+            prop.setProperty("username", "eveline");
+            prop.setProperty("password", "test1234");
 
             // save properties to project root folder
             prop.store(output, null);
@@ -80,6 +89,11 @@ public class AppConfigurationModule {
 
             this.stemHost = prop.getProperty("stemHost");
             this.stemPort = Integer.parseInt(prop.getProperty("stemPort"));
+
+            this.mqttBroker = prop.getProperty("mqttBroker");
+            this.clientId = prop.getProperty("clientId");
+            this.username = prop.getProperty("username");
+            this.password = prop.getProperty("password");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
