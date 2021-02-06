@@ -5,12 +5,16 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 
 public class CanRunnable implements Runnable {
+    ReadCanData readCanData;
 
+    public CanRunnable() {
+        readCanData = new ReadCanData();
+    }
 
     @Override
     public void run() {
         System.out.println("Start reading canbus data...");
-        ReadCanData readCanData = new ReadCanData();
+        System.out.println("Global error counts: " + this.readCanData.errorCounts);
 
         JSONObject jsonObject = readCanData.readGoApplication();
         if (jsonObject == null) {

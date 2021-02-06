@@ -21,11 +21,13 @@ import java.util.concurrent.TimeUnit;
 
 public class ReadCanData {
 
+    public int errorCounts = 0;
+
     public JSONObject readGoApplication() {
 
         ProcessBuilder processBuilder = new ProcessBuilder();
         File uvrjson = new File("uvrjson_armv6");
-        String[] cmd = {"/bin/sh", "-c", "ifdown can0 && ifup can0 && " + uvrjson.getAbsolutePath()};
+        String[] cmd = {"/bin/sh", "-c", uvrjson.getAbsolutePath()};
 
         processBuilder.command(cmd);
 
@@ -49,6 +51,7 @@ public class ReadCanData {
             int exitCode = process.exitValue();
             if (exitCode != 0) {
                 System.out.println("Can error! No valid output.");
+                errorCounts++;
                 return null;
             } else {
                 return new JSONObject(stringBuilder.toString());
@@ -56,6 +59,7 @@ public class ReadCanData {
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            errorCounts++;
             return null;
         }
     }
