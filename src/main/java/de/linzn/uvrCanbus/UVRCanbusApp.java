@@ -49,6 +49,7 @@ public class UVRCanbusApp {
             connOpts.setUserName(user);
             connOpts.setPassword(password.toCharArray());
             connOpts.setCleanSession(true);
+            connOpts.setAutomaticReconnect(true);
             System.out.println("Connecting to IOBroker " + broker + "...");
             mqttClient.connect(connOpts);
             System.out.println("Connection to IOBroker is valid!");
