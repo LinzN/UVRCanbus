@@ -41,10 +41,23 @@ public class CanRunnable implements Runnable {
         MqttMessage mqttMessage = new MqttMessage();
         mqttMessage.setPayload(jsonObject.toString().getBytes());
         mqttMessage.setQos(2);
-        System.out.println("MQTT send data to uvr/canbus/data");
-        UVRCanbusApp.UVRCanbusApp.mqttClient.publish("uvr/canbus/data", mqttMessage);
-        System.out.println("MQTT published!");
-        System.out.println("");
+        publishMQTT("uvr/canbus/data", mqttMessage);;
+    }
+
+    private void publishMQTT(String topic, MqttMessage mqttMessage) {
+        try {
+            System.out.println("MQTT send data to uvr/canbus/data");
+            if (!UVRCanbusApp.UVRCanbusApp.mqttClient.isConnected()) {
+                System.out.println("IOBroker not connected. Trying to reconnect...");
+                UVRCanbusApp.UVRCanbusApp.mqttClient.reconnect();
+            }
+            UVRCanbusApp.UVRCanbusApp.mqttClient.publish(topic, mqttMessage);
+            System.out.println("MQTT published!");
+        } catch (MqttException e) {
+            e.printStackTrace();
+            System.out.println("Error while sending MQTT data!");
+        }
+        System.out.println();
     }
 
 }

@@ -27,7 +27,13 @@ public class UVRCanbusApp {
     public MqttClient mqttClient;
 
     public UVRCanbusApp() {
-        this.connectingBroker();
+        while (!this.connectingBroker()) {
+            System.out.println("IOBroker connection failed! Trying again.");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+        }
         System.out.println("Starting canbus data parser!");
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(new CanRunnable(), 10, 180, TimeUnit.SECONDS);
     }
@@ -37,7 +43,7 @@ public class UVRCanbusApp {
         UVRCanbusApp = new UVRCanbusApp();
     }
 
-    private void connectingBroker() {
+    private boolean connectingBroker() {
         MemoryPersistence persistence = new MemoryPersistence();
         String broker = appConfigurationModule.mqttBroker;
         String clientId = appConfigurationModule.clientId;
@@ -53,8 +59,10 @@ public class UVRCanbusApp {
             System.out.println("Connecting to IOBroker " + broker + "...");
             mqttClient.connect(connOpts);
             System.out.println("Connection to IOBroker is valid!");
+            return true;
         } catch (MqttException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
