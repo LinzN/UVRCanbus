@@ -12,6 +12,8 @@
 package de.linzn.uvrCanbus.appConfiguration;
 
 
+import de.linzn.uvrCanbus.UVRCanbusApp;
+
 import java.io.*;
 import java.util.Properties;
 
@@ -72,7 +74,7 @@ public class AppConfigurationModule {
             prop.store(output, null);
 
         } catch (IOException io) {
-            io.printStackTrace();
+            UVRCanbusApp.LOGGER.ERROR(io);
         }
     }
 
@@ -95,7 +97,7 @@ public class AppConfigurationModule {
             this.username = prop.getProperty("username");
             this.password = prop.getProperty("password");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            UVRCanbusApp.LOGGER.ERROR(ex);
         }
 
     }

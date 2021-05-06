@@ -13,8 +13,8 @@ public class CanRunnable implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Start reading canbus data...");
-        System.out.println("Global error counts: " + this.readCanData.errorCounts);
+        UVRCanbusApp.LOGGER.INFO("Start reading canbus data...");
+        UVRCanbusApp.LOGGER.INFO("Global error counts: " + this.readCanData.errorCounts);
 
         JSONObject jsonObject = readCanData.readGoApplication();
         if (jsonObject == null) {
@@ -25,15 +25,15 @@ public class CanRunnable implements Runnable {
                 retries++;
             }
             if (jsonObject == null) {
-                System.out.println("Error after 5 retries to read canbus data. Aborting!");
+                UVRCanbusApp.LOGGER.ERROR("Error after 5 retries to read canbus data. Aborting!");
                 return;
             }
         }
         try {
-            System.out.println("Finish reading canbus data!");
+            UVRCanbusApp.LOGGER.INFO("Finish reading canbus data!");
             sendDataMqtt(jsonObject);
         } catch (MqttException e) {
-            e.printStackTrace();
+            UVRCanbusApp.LOGGER.ERROR(e);
         }
     }
 
@@ -41,23 +41,24 @@ public class CanRunnable implements Runnable {
         MqttMessage mqttMessage = new MqttMessage();
         mqttMessage.setPayload(jsonObject.toString().getBytes());
         mqttMessage.setQos(2);
-        publishMQTT("uvr/canbus/data", mqttMessage);;
+        publishMQTT("uvr/canbus/data", mqttMessage);
+        ;
     }
 
     private void publishMQTT(String topic, MqttMessage mqttMessage) {
         try {
-            System.out.println("MQTT send data to uvr/canbus/data");
+            UVRCanbusApp.LOGGER.INFO("MQTT send data to uvr/canbus/data");
             if (!UVRCanbusApp.UVRCanbusApp.mqttClient.isConnected()) {
-                System.out.println("IOBroker not connected. Trying to reconnect...");
+                UVRCanbusApp.LOGGER.ERROR("IOBroker not connected. Trying to reconnect...");
                 UVRCanbusApp.UVRCanbusApp.mqttClient.reconnect();
             }
             UVRCanbusApp.UVRCanbusApp.mqttClient.publish(topic, mqttMessage);
-            System.out.println("MQTT published!");
+            UVRCanbusApp.LOGGER.INFO("MQTT published!");
         } catch (MqttException e) {
-            e.printStackTrace();
-            System.out.println("Error while sending MQTT data!");
+            UVRCanbusApp.LOGGER.ERROR(e);
+            UVRCanbusApp.LOGGER.ERROR("Error while sending MQTT data!");
         }
-        System.out.println();
+        UVRCanbusApp.LOGGER.INFO("");
     }
 
 }

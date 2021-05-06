@@ -43,14 +43,14 @@ public class ReadCanData {
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
             }
-            if(!process.waitFor(40, TimeUnit.SECONDS)){
-                System.out.println("Killing process");
+            if (!process.waitFor(40, TimeUnit.SECONDS)) {
+                UVRCanbusApp.LOGGER.ERROR("Killing process");
                 process.destroyForcibly();
             }
 
             int exitCode = process.exitValue();
             if (exitCode != 0) {
-                System.out.println("Can error! No valid output.");
+                UVRCanbusApp.LOGGER.ERROR("Can error! No valid output.");
                 errorCounts++;
                 return null;
             } else {
@@ -58,7 +58,7 @@ public class ReadCanData {
             }
 
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            UVRCanbusApp.LOGGER.ERROR(e);
             errorCounts++;
             return null;
         }

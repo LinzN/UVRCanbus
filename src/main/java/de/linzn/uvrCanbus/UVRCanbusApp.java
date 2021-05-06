@@ -11,6 +11,8 @@
 
 package de.linzn.uvrCanbus;
 
+import de.linzn.simplyLogger.LogSystem;
+import de.linzn.simplyLogger.Logger;
 import de.linzn.uvrCanbus.appConfiguration.AppConfigurationModule;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -23,22 +25,28 @@ import java.util.concurrent.TimeUnit;
 public class UVRCanbusApp {
     public static UVRCanbusApp UVRCanbusApp;
     public static AppConfigurationModule appConfigurationModule;
+    public static Logger LOGGER;
+    public static LogSystem logSystem;
 
     public MqttClient mqttClient;
 
     public UVRCanbusApp() {
         while (!this.connectingBroker()) {
-            System.out.println("IOBroker connection failed! Trying again.");
+            LOGGER.ERROR("IOBroker connection failed! Trying again.");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
             }
         }
-        System.out.println("Starting canbus data parser!");
+        LOGGER.INFO("Starting canbus data parser!");
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(new CanRunnable(), 10, 180, TimeUnit.SECONDS);
     }
 
     public static void main(String[] args) {
+        logSystem = new LogSystem("UVRCANBUS");
+        //logSystem.setFileLogger(new File("logs"));
+        LOGGER = logSystem.getLogger();
+        LOGGER.INFO(UVRCanbusApp.class.getSimpleName() + " load app...");
         appConfigurationModule = new AppConfigurationModule();
         UVRCanbusApp = new UVRCanbusApp();
     }
@@ -56,12 +64,12 @@ public class UVRCanbusApp {
             connOpts.setPassword(password.toCharArray());
             connOpts.setCleanSession(true);
             connOpts.setAutomaticReconnect(true);
-            System.out.println("Connecting to IOBroker " + broker + "...");
+            LOGGER.INFO("Connecting to IOBroker " + broker + "...");
             mqttClient.connect(connOpts);
-            System.out.println("Connection to IOBroker is valid!");
+            LOGGER.INFO("Connection to IOBroker is valid!");
             return true;
         } catch (MqttException e) {
-            e.printStackTrace();
+            LOGGER.ERROR(e);
             return false;
         }
     }
